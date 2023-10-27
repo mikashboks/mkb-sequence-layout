@@ -18,6 +18,11 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of(JavaVersion.VERSION_11.toString()))
+        }
+    }
     namespace 'com.mikashboks.sequencelayout.sample'
 }
 

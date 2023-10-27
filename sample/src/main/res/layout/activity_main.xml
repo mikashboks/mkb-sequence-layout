@@ -29,6 +29,9 @@
             <com.transferwise.sequencelayout.SequenceStep
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:active="true"
+                app:subtitle="This is the subtitle."
+                app:titleTextAppearance="@style/TextAppearance.AppCompat.Title"
                 app:title="Second step"/>
 
             <com.transferwise.sequencelayout.SequenceStep
@@ -45,6 +48,7 @@
             <com.transferwise.sequencelayout.SequenceStep
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:active="true"
                 app:title="Fourth step"/>
 
             <com.transferwise.sequencelayout.SequenceStep

@@ -197,7 +197,7 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
         progressBarForeground.scaleY = 0f
 
         val activeStepIndex =
-            stepsWrapper.children().indexOfFirst { it is SequenceStep && it.isActive() }
+            stepsWrapper.children().indexOfLast { it is SequenceStep && it.isActive() }
 
         if (activeStepIndex != -1) {
             val activeDot = dotsWrapper.getChildAt(activeStepIndex)

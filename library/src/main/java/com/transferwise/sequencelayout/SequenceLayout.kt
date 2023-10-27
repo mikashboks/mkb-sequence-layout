@@ -13,6 +13,7 @@ import android.widget.FrameLayout
 import androidx.annotation.ColorInt
 import androidx.annotation.StyleRes
 import androidx.core.view.ViewCompat
+import com.mikashboks.sequencelayout.R
 
 /**
  * Vertical step tracker that contains {@link com.transferwise.sequencelayout.SequenceStep}s and animates to the first active step.

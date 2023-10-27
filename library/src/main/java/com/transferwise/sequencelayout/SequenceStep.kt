@@ -12,6 +12,7 @@ import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
 import androidx.core.view.doOnPreDraw
 import androidx.core.widget.TextViewCompat
+import com.mikashboks.sequencelayout.R
 import kotlin.math.max
 
 /**

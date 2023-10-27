@@ -8,13 +8,13 @@ android {
     defaultConfig {
         minSdkVersion(16)
         targetSdkVersion(34)
-        applicationId = "com.transferwise.sequencelayout.sample"
+        applicationId = "com.mikashboks.sequencelayout.sample"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    namespace 'com.transferwise.sequencelayout.sample'
+    namespace 'com.mikashboks.sequencelayout.sample'
 }
 
 dependencies {

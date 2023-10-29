@@ -11,6 +11,7 @@ import androidx.annotation.Dimension
 import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import com.mikashboks.sequencelayout.R
 import kotlin.math.max
@@ -155,7 +156,7 @@ public class SequenceStep(context: Context?, attrs: AttributeSet?) : TableRow(co
      */
     public fun setSubtitle(subtitle: CharSequence?) {
         this.subtitle.text = subtitle
-        this.subtitle.visibility = View.VISIBLE
+        this.subtitle.isVisible = subtitle.isNullOrEmpty()
     }
 
     /**

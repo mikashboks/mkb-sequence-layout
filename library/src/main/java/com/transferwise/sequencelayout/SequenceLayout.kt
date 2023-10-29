@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import android.widget.FrameLayout
 import androidx.annotation.ColorInt
 import androidx.annotation.StyleRes
 import androidx.core.view.ViewCompat
+import androidx.core.view.children
 import com.mikashboks.sequencelayout.R
 
 /**
@@ -238,6 +240,20 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
                             }
                         }
                 }
+                .withEndAction {
+
+                    postDelayed({
+                        // Animate Every activated dot
+                        stepsWrapper.children.forEachIndexed { index, view ->
+                            if(view is SequenceStep && view.isActive()){
+                                dotsWrapper.children().getOrNull(index)?.apply {
+                                    this.isEnabled = true
+                                    this.isActivated = true
+                                }
+                            }
+                        }
+                    }, 500)
+                }
                 .start()
         }
     }
@@ -251,14 +267,6 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
 
     override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
         if (child is SequenceStep) {
-            if (child.isActive()) {
-                child.setPadding(
-                    0,
-                    if (stepsWrapper.childCount == 0) 0 else resources.getDimensionPixelSize(R.dimen.sequence_active_step_padding_top), //no paddingTop if first step is active
-                    0,
-                    resources.getDimensionPixelSize(R.dimen.sequence_active_step_padding_bottom)
-                )
-            }
             child.onStepChangedListener = this
             stepsWrapper.addView(child, params)
             return

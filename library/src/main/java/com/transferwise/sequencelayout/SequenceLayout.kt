@@ -247,8 +247,10 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
                         stepsWrapper.children.forEachIndexed { index, view ->
                             if(view is SequenceStep && view.isActive()){
                                 dotsWrapper.children().getOrNull(index)?.apply {
-                                    this.isEnabled = true
-                                    this.isActivated = true
+                                    if (this is SequenceStepDot) {
+                                        this.isEnabled = true
+                                        this.isActivated = true
+                                    }
                                 }
                             }
                         }

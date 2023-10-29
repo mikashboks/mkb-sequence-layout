@@ -156,7 +156,7 @@ public class SequenceStep(context: Context?, attrs: AttributeSet?) : TableRow(co
      */
     public fun setSubtitle(subtitle: CharSequence?) {
         this.subtitle.text = subtitle
-        this.subtitle.isVisible = subtitle.isNullOrEmpty()
+        this.subtitle.isVisible = !subtitle.isNullOrEmpty()
     }
 
     /**

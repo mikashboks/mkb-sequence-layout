@@ -4,6 +4,7 @@
     <declare-styleable name="SequenceLayout">
         <attr name="progressForegroundColor" format="color"/>
         <attr name="progressBackgroundColor" format="color"/>
+        <attr name="stepVerticalSpace" format="dimension"/>
     </declare-styleable>
 
     <declare-styleable name="SequenceStep">
@@ -21,6 +22,7 @@
     <style name="SequenceLayout">
         <item name="progressForegroundColor">?colorAccent</item>
         <item name="progressBackgroundColor">@color/default_progress_background</item>
+        <item name="stepVerticalSpace">@dimen/step_vertical_space</item>
     </style>
 
     <style name="SequenceStep">

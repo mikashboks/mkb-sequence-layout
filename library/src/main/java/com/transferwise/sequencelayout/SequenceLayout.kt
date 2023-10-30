@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
+import androidx.annotation.DimenRes
 import androidx.annotation.StyleRes
 import androidx.core.view.ViewCompat
 import androidx.core.view.children
@@ -24,6 +25,7 @@ import com.mikashboks.sequencelayout.R
  * &lt;com.transferwise.sequencelayout.SequenceLayout
  *      android:layout_width="match_parent"
  *      android:layout_height="wrap_content"
+ *      app:stepVerticalSpace="4dp"
  *      app:progressForegroundColor="?colorAccent"
  *      app:progressBackgroundColor="#ddd"&gt;
  *
@@ -34,6 +36,7 @@ import com.mikashboks.sequencelayout.R
  * &lt;/com.transferwise.sequencelayout.SequenceLayout&gt;
  * </pre>
  *
+ * @attr ref com.transferwise.sequencelayout.R.styleable#SequenceLayout_stepVerticalSpace
  * @attr ref com.transferwise.sequencelayout.R.styleable#SequenceLayout_progressForegroundColor
  * @attr ref com.transferwise.sequencelayout.R.styleable#SequenceLayout_progressBackgroundColor
  *
@@ -75,6 +78,8 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
     @ColorInt
     private var progressForegroundColor: Int = 0
 
+    @DimenRes
+    private var stepVerticalSpace: Int = 0
 
     public fun setStyle(@StyleRes defStyleAttr: Int) {
         val attributes =
@@ -82,6 +87,17 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
         applyAttributes(attributes)
         attributes.recycle()
     }
+
+    /**
+     * Sets the step vertical space
+     *
+     * @attr ref com.transferwise.sequencelayout.R.styleable#SequenceLayout_stepVerticalSpace
+     */
+    public fun setStepVerticalSpace(@DimenRes stepVerticalSpace: Int) {
+        this.stepVerticalSpace = stepVerticalSpace
+        requestLayout()
+    }
+
 
     /**
      * Sets the progress bar color
@@ -130,6 +146,13 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
     private fun applyAttributes(attributes: TypedArray) {
         setupProgressForegroundColor(attributes)
         setupProgressBackgroundColor(attributes)
+        setupStepVerticalSpace(attributes)
+    }
+
+    private fun setupStepVerticalSpace(attributes: TypedArray) {
+        setStepVerticalSpace(
+            attributes.getDimensionPixelSize(R.styleable.SequenceLayout_stepVerticalSpace, 0)
+        )
     }
 
     private fun setupProgressForegroundColor(attributes: TypedArray) {
@@ -270,6 +293,9 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
     override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
         if (child is SequenceStep) {
             child.onStepChangedListener = this
+            child.setPadding(
+                0, stepVerticalSpace, 0, stepVerticalSpace
+            )
             stepsWrapper.addView(child, params)
             return
         }

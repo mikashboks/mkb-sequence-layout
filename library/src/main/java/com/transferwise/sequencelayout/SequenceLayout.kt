@@ -77,7 +77,6 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
     @DimenRes
     private var stepVerticalSpace: Int = 0
 
-    private var progressDotStepIndex: Int = -1
     private var progressDotStepCurrent: Int = 0
     private var progressDotStepMax: Int = 0
 
@@ -91,15 +90,6 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
             context.theme.obtainStyledAttributes(defStyleAttr, R.styleable.SequenceLayout)
         applyAttributes(attributes)
         attributes.recycle()
-    }
-
-    /**
-     * Sets the step progress dot index
-     *
-     * @attr ref com.transferwise.sequencelayout.R.styleable#SequenceLayout_progressDotStepIndex
-     */
-    public fun setProgressDotStepIndex(progressDotStepIndex: Int) {
-        this.progressDotStepIndex = progressDotStepIndex
     }
 
     /**
@@ -251,23 +241,26 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
     private fun progressToNextStep() {
         progressStepOffSet = 0
 
+        val activeStepIndex = stepsWrapper.children().indexOfLast { it is SequenceStep && it.isActive() }
+
         // Validation for show progress to next step
-        if (progressDotStepIndex >= (stepsWrapper.children().count() - 1) ||
-            progressDotStepCurrent > progressDotStepMax || progressDotStepIndex == -1
+        if (activeStepIndex >= (stepsWrapper.children().count() - 1) ||
+            progressDotStepCurrent > progressDotStepMax || activeStepIndex == -1
         ) {
             progressStepOffSet = 0
+            return
         }
 
         var prevStepOffSet = 0
         stepsWrapper.children()
             .forEachIndexed { i, view ->
 
-                if (i == progressDotStepIndex) {
+                if (i == activeStepIndex) {
                     val totalDotOffset = getRelativeTop(view)
                     prevStepOffSet = totalDotOffset
                 }
 
-                if (i == (progressDotStepIndex + 1)) {
+                if (i == (activeStepIndex + 1)) {
                     val totalDotOffset = getRelativeTop(view)
                     progressStepOffSet = totalDotOffset - prevStepOffSet
                     return@forEachIndexed

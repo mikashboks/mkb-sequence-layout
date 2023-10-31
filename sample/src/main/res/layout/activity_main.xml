@@ -16,6 +16,7 @@
         tools:ignore="HardcodedText">
 
         <com.transferwise.sequencelayout.SequenceLayout
+            android:id="@+id/sequenceLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -30,8 +31,8 @@
             <com.transferwise.sequencelayout.SequenceStep
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:active="true"
                 app:anchor="30 Nov"
+                app:active="true"
                 app:subtitle="This is the subtitle."
                 app:title="Second step"
                 app:titleTextAppearance="@style/TextAppearance.AppCompat.Title" />
@@ -53,7 +54,6 @@
             <com.transferwise.sequencelayout.SequenceStep
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:active="true"
                 app:anchor="2 Dec"
                 app:title="Fifth step" />
         </com.transferwise.sequencelayout.SequenceLayout>

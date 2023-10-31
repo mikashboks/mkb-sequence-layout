@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -60,10 +59,7 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
 
     init {
         val attributes = getContext().theme.obtainStyledAttributes(
-            attrs,
-            R.styleable.SequenceLayout,
-            0,
-            R.style.SequenceLayout
+            attrs, R.styleable.SequenceLayout, 0, R.style.SequenceLayout
         )
         applyAttributes(attributes)
         attributes.recycle()
@@ -81,11 +77,48 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
     @DimenRes
     private var stepVerticalSpace: Int = 0
 
+    private var progressDotStepIndex: Int = -1
+    private var progressDotStepCurrent: Int = 0
+    private var progressDotStepMax: Int = 0
+
+    private var firstOffset = 0
+    private var lastOffset = 0
+    private var progressStepOffSet = 0
+
+
     public fun setStyle(@StyleRes defStyleAttr: Int) {
         val attributes =
             context.theme.obtainStyledAttributes(defStyleAttr, R.styleable.SequenceLayout)
         applyAttributes(attributes)
         attributes.recycle()
+    }
+
+    /**
+     * Sets the step progress dot index
+     *
+     * @attr ref com.transferwise.sequencelayout.R.styleable#SequenceLayout_progressDotStepIndex
+     */
+    public fun setProgressDotStepIndex(progressDotStepIndex: Int) {
+        this.progressDotStepIndex = progressDotStepIndex
+    }
+
+    /**
+     * Sets the step progress current value
+     *
+     * @attr ref com.transferwise.sequencelayout.R.styleable#SequenceLayout_progressDotStepCurrent
+     */
+    public fun setProgressDotStepCurrent(progressDotStepCurrent: Int) {
+        this.progressDotStepCurrent = progressDotStepCurrent
+        progressToNextStep()
+    }
+
+    /**
+     * Sets the step progress max value
+     *
+     * @attr ref com.transferwise.sequencelayout.R.styleable#SequenceLayout_progressDotStepMax
+     */
+    public fun setProgressDotStepMax(progressDotStepMax: Int) {
+        this.progressDotStepMax = progressDotStepMax
     }
 
     /**
@@ -158,8 +191,7 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
     private fun setupProgressForegroundColor(attributes: TypedArray) {
         setProgressForegroundColor(
             attributes.getColor(
-                R.styleable.SequenceLayout_progressForegroundColor,
-                0
+                R.styleable.SequenceLayout_progressForegroundColor, 0
             )
         )
     }
@@ -167,8 +199,7 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
     private fun setupProgressBackgroundColor(attributes: TypedArray) {
         setProgressBackgroundColor(
             attributes.getColor(
-                R.styleable.SequenceLayout_progressBackgroundColor,
-                0
+                R.styleable.SequenceLayout_progressBackgroundColor, 0
             )
         )
     }
@@ -181,8 +212,8 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
 
     private fun placeDots() {
         dotsWrapper.removeAllViews()
-        var firstOffset = 0
-        var lastOffset = 0
+        firstOffset = 0
+        lastOffset = 0
 
         stepsWrapper.children().forEachIndexed { i, view ->
             val sequenceStep = view as SequenceStep
@@ -193,8 +224,7 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
             sequenceStepDot.clipToPadding = false
             val layoutParams = LayoutParams(8.toPx(), 8.toPx()) //TODO dynamic dot size
             val totalDotOffset = getRelativeTop(
-                sequenceStep,
-                stepsWrapper
+                sequenceStep, stepsWrapper
             ) + sequenceStep.paddingTop + sequenceStep.getDotOffset() + 2.toPx() //TODO dynamic dot size
             layoutParams.topMargin = totalDotOffset
             layoutParams.gravity = Gravity.CENTER_HORIZONTAL
@@ -214,6 +244,45 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
         foregroundLayoutParams.topMargin = firstOffset + 4.toPx() //TODO dynamic dot size
         foregroundLayoutParams.height = lastOffset - firstOffset
         progressBarForeground.requestLayout()
+
+        progressToNextStep()
+    }
+
+    private fun progressToNextStep() {
+        progressStepOffSet = 0
+
+        // Validation for show progress to next step
+        if (progressDotStepIndex >= (stepsWrapper.children().count() - 1) ||
+            progressDotStepCurrent > progressDotStepMax || progressDotStepIndex == -1
+        ) {
+            progressStepOffSet = 0
+        }
+
+        var prevStepOffSet = 0
+        stepsWrapper.children()
+            .forEachIndexed { i, view ->
+
+                if (i == progressDotStepIndex) {
+                    val totalDotOffset = getRelativeTop(view)
+                    prevStepOffSet = totalDotOffset
+                }
+
+                if (i == (progressDotStepIndex + 1)) {
+                    val totalDotOffset = getRelativeTop(view)
+                    progressStepOffSet = totalDotOffset - prevStepOffSet
+                    return@forEachIndexed
+                }
+            }
+
+        progressStepOffSet = (progressDotStepCurrent.toFloat() / progressDotStepMax.toFloat() * progressStepOffSet.toFloat()).toInt()
+        post(animateToActive)
+    }
+
+    private fun getRelativeTop(view: View?): Int {
+        val sequenceStep = view as SequenceStep
+        return getRelativeTop(sequenceStep, stepsWrapper) +
+                sequenceStep.paddingTop +
+                sequenceStep.getDotOffset() + 2.toPx()
     }
 
     private val animateToActive = {
@@ -230,45 +299,38 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
             val progressBarForegroundTopMargin =
                 (progressBarForeground.layoutParams as LayoutParams).topMargin
             val scaleEnd =
-                (activeDotTopMargin + (activeDot.measuredHeight / 2) - progressBarForegroundTopMargin) /
-                        progressBarBackground.measuredHeight.toFloat()
+                (activeDotTopMargin + progressStepOffSet + (activeDot.measuredHeight / 2) -
+                        progressBarForegroundTopMargin) / progressBarBackground.measuredHeight.toFloat()
 
             ViewCompat.animate(progressBarForeground)
                 .setStartDelay(resources.getInteger(R.integer.sequence_step_duration).toLong())
-                .scaleY(scaleEnd)
-                .setInterpolator(LinearInterpolator())
-                .setDuration(
+                .scaleY(scaleEnd).setInterpolator(LinearInterpolator()).setDuration(
                     activeStepIndex * resources.getInteger(R.integer.sequence_step_duration)
                         .toLong()
-                )
-                .setUpdateListener {
+                ).setUpdateListener {
                     val animatedOffset =
                         progressBarForeground.scaleY * progressBarBackground.measuredHeight
-                    dotsWrapper
-                        .children()
-                        .forEachIndexed { i, view ->
-                            if (i > activeStepIndex) {
-                                return@forEachIndexed
-                            }
-                            val dot = view as SequenceStepDot
-                            val dotTopMargin = (dot.layoutParams as LayoutParams).topMargin -
-                                    progressBarForegroundTopMargin -
-                                    (dot.measuredHeight / 2)
-                            if (animatedOffset >= dotTopMargin) {
-                                if (i < activeStepIndex && !dot.isEnabled) {
-                                    dot.isEnabled = true
-                                } else if (i == activeStepIndex && !dot.isActivated) {
-                                    dot.isActivated = true
-                                }
+                    dotsWrapper.children().forEachIndexed { i, view ->
+                        if (i > activeStepIndex) {
+                            return@forEachIndexed
+                        }
+                        val dot = view as SequenceStepDot
+                        val dotTopMargin =
+                            (dot.layoutParams as LayoutParams).topMargin - progressBarForegroundTopMargin - (dot.measuredHeight / 2)
+                        if (animatedOffset >= dotTopMargin) {
+                            if (i < activeStepIndex && !dot.isEnabled) {
+                                dot.isEnabled = true
+                            } else if (i == activeStepIndex && !dot.isActivated) {
+                                dot.isActivated = true
                             }
                         }
-                }
-                .withEndAction {
+                    }
+                }.withEndAction {
 
                     postDelayed({
                         // Animate Every activated dot
                         stepsWrapper.children.forEachIndexed { index, view ->
-                            if(view is SequenceStep && view.isActive()){
+                            if (view is SequenceStep && view.isActive()) {
                                 dotsWrapper.children().getOrNull(index)?.apply {
                                     if (this is SequenceStepDot) {
                                         this.isEnabled = true
@@ -278,8 +340,7 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
                             }
                         }
                     }, 500)
-                }
-                .start()
+                }.start()
         }
     }
 

@@ -49,6 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:anchor="30 Nov"
+                app:active="true"
                 app:title="Fourth step" />
 
             <com.transferwise.sequencelayout.SequenceStep

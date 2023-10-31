@@ -11,7 +11,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         findViewById<SequenceLayout>(R.id.sequenceLayout).apply {
-            setProgressDotStepIndex(1)
             setProgressDotStepMax(1000)
             setProgressDotStepCurrent(300)
 

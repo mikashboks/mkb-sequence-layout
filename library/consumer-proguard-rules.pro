@@ -1,0 +1,1 @@
+-dontwarn com.mikashboks.sequencelayout.R$id

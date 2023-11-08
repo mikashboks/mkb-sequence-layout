@@ -11,6 +11,7 @@ android {
     defaultConfig {
         minSdkVersion(16)
         targetSdkVersion(34)
+        consumerProguardFiles("consumer-proguard-rules.pro")
         setProperty("archivesBaseName", "com.mikashboks.sequencelayout-${versionName}")
     }
 

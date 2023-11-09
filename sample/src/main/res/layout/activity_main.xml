@@ -19,8 +19,7 @@
             android:id="@+id/sequenceLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:stepVerticalSpace="4dp">
+            app:stepVerticalSpace="16dp">
 
             <com.transferwise.sequencelayout.SequenceStep
                 android:layout_width="match_parent"

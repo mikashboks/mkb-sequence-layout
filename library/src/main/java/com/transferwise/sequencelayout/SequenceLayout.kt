@@ -347,9 +347,11 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
     override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
         if (child is SequenceStep) {
             child.onStepChangedListener = this
-            child.setPadding(
-                0, stepVerticalSpace, 0, stepVerticalSpace
-            )
+
+            if (stepsWrapper.children().isNotEmpty()) {
+                child.setPadding(0, stepVerticalSpace, 0, 0)
+            }
+
             stepsWrapper.addView(child, params)
             return
         }

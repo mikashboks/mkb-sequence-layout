@@ -288,52 +288,54 @@ public class SequenceLayout(context: Context, attrs: AttributeSet?, defStyleAttr
 
         if (activeStepIndex != -1) {
             val activeDot = dotsWrapper.getChildAt(activeStepIndex)
-            val activeDotTopMargin = (activeDot.layoutParams as LayoutParams).topMargin
-            val progressBarForegroundTopMargin =
-                (progressBarForeground.layoutParams as LayoutParams).topMargin
-            val scaleEnd =
-                (activeDotTopMargin + progressStepOffSet + (activeDot.measuredHeight / 2) -
-                        progressBarForegroundTopMargin) / progressBarBackground.measuredHeight.toFloat()
+            if (activeDot != null) {
+                val activeDotTopMargin = (activeDot.layoutParams as LayoutParams).topMargin
+                val progressBarForegroundTopMargin =
+                    (progressBarForeground.layoutParams as LayoutParams).topMargin
+                val scaleEnd =
+                    (activeDotTopMargin + progressStepOffSet + (activeDot.measuredHeight / 2) -
+                            progressBarForegroundTopMargin) / progressBarBackground.measuredHeight.toFloat()
 
-            ViewCompat.animate(progressBarForeground)
-                .setStartDelay(resources.getInteger(R.integer.sequence_step_duration).toLong())
-                .scaleY(scaleEnd).setInterpolator(LinearInterpolator()).setDuration(
-                    activeStepIndex * resources.getInteger(R.integer.sequence_step_duration)
-                        .toLong()
-                ).setUpdateListener {
-                    val animatedOffset =
-                        progressBarForeground.scaleY * progressBarBackground.measuredHeight
-                    dotsWrapper.children().forEachIndexed { i, view ->
-                        if (i > activeStepIndex) {
-                            return@forEachIndexed
-                        }
-                        val dot = view as SequenceStepDot
-                        val dotTopMargin =
-                            (dot.layoutParams as LayoutParams).topMargin - progressBarForegroundTopMargin - (dot.measuredHeight / 2)
-                        if (animatedOffset >= dotTopMargin) {
-                            if (i < activeStepIndex && !dot.isEnabled) {
-                                dot.isEnabled = true
-                            } else if (i == activeStepIndex && !dot.isActivated) {
-                                dot.isActivated = true
+                ViewCompat.animate(progressBarForeground)
+                    .setStartDelay(resources.getInteger(R.integer.sequence_step_duration).toLong())
+                    .scaleY(scaleEnd).setInterpolator(LinearInterpolator()).setDuration(
+                        activeStepIndex * resources.getInteger(R.integer.sequence_step_duration)
+                            .toLong()
+                    ).setUpdateListener {
+                        val animatedOffset =
+                            progressBarForeground.scaleY * progressBarBackground.measuredHeight
+                        dotsWrapper.children().forEachIndexed { i, view ->
+                            if (i > activeStepIndex) {
+                                return@forEachIndexed
                             }
-                        }
-                    }
-                }.withEndAction {
-
-                    postDelayed({
-                        // Animate Every activated dot
-                        stepsWrapper.children.forEachIndexed { index, view ->
-                            if (view is SequenceStep && view.isActive()) {
-                                dotsWrapper.children().getOrNull(index)?.apply {
-                                    if (this is SequenceStepDot) {
-                                        this.isEnabled = true
-                                        this.isActivated = true
-                                    }
+                            val dot = view as SequenceStepDot
+                            val dotTopMargin =
+                                (dot.layoutParams as LayoutParams).topMargin - progressBarForegroundTopMargin - (dot.measuredHeight / 2)
+                            if (animatedOffset >= dotTopMargin) {
+                                if (i < activeStepIndex && !dot.isEnabled) {
+                                    dot.isEnabled = true
+                                } else if (i == activeStepIndex && !dot.isActivated) {
+                                    dot.isActivated = true
                                 }
                             }
                         }
-                    }, 500)
-                }.start()
+                    }.withEndAction {
+
+                        postDelayed({
+                            // Animate Every activated dot
+                            stepsWrapper.children.forEachIndexed { index, view ->
+                                if (view is SequenceStep && view.isActive()) {
+                                    dotsWrapper.children().getOrNull(index)?.apply {
+                                        if (this is SequenceStepDot) {
+                                            this.isEnabled = true
+                                            this.isActivated = true
+                                        }
+                                    }
+                                }
+                            }
+                        }, 500)
+                    }.start()
+            }
         }
     }
 

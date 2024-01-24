@@ -1,4 +1,4 @@
-# sequence-layout [![](https://jitpack.io/v/transferwise/sequence-layout.svg)](https://jitpack.io/#transferwise/sequence-layout)
+# sequence-layout [![](https://jitpack.io/v/mikashboks/mkb-sequence-layout.svg)](https://jitpack.io/#mikashboks/mkb-sequence-layout)
 <img align="right" src="https://media.giphy.com/media/TGaDOPfTrX749uhD0L/giphy.gif">
 A vertical sequence UI component for Android.
 
